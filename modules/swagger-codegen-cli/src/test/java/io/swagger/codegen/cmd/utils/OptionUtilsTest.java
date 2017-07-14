@@ -21,24 +21,41 @@ public class OptionUtilsTest {
         doCommaSeparatedListTest("", emptyList());
         doCommaSeparatedListTest(null, emptyList());
     }
-
+	
+	//AQCU Extension
     @Test
-    public void testParseCommaSeparatedTuples() throws Exception {
+    public void parseTupleList() throws Exception {
         doTupleListTest("a=1,b=2,c=3",
-                asList(Pair.of("a", "1"), Pair.of("b", "2"), Pair.of("c", "3")));
+                asList(Pair.of("a", "1,b=2,c=3")));
         doTupleListTest("xyz", asList(Pair.of("xyz", "")));
-        doTupleListTest("a=1,,c=3", asList(Pair.of("a", "1"), Pair.of("c", "3")));
-        doTupleListTest("a=1,xyz=,c=3",
-                asList(Pair.of("a", "1"), Pair.of("xyz", ""), Pair.of("c", "3")));
-        doTupleListTest("a=1,xyz,c=3",
-                asList(Pair.of("a", "1"), Pair.of("xyz", ""), Pair.of("c", "3")));
-        doTupleListTest("a=1,=,c=3", asList(Pair.of("a", "1"), Pair.of("c", "3")));
+        doTupleListTest("a=Map<String,Object>", asList(Pair.of("a", "Map<String,Object>")));
         doTupleListTest("", emptyPairList());
         doTupleListTest(null, emptyPairList());
     }
 
+    @Test
+    public void testParseCommaSeparatedTuples() throws Exception {
+        doCommaSeparatedTupleListTest("a=1,b=2,c=3",
+                asList(Pair.of("a", "1"), Pair.of("b", "2"), Pair.of("c", "3")));
+        doCommaSeparatedTupleListTest("xyz", asList(Pair.of("xyz", "")));
+        doCommaSeparatedTupleListTest("a=1,,c=3", asList(Pair.of("a", "1"), Pair.of("c", "3")));
+        doCommaSeparatedTupleListTest("a=1,xyz=,c=3",
+                asList(Pair.of("a", "1"), Pair.of("xyz", ""), Pair.of("c", "3")));
+        doCommaSeparatedTupleListTest("a=1,xyz,c=3",
+                asList(Pair.of("a", "1"), Pair.of("xyz", ""), Pair.of("c", "3")));
+        doCommaSeparatedTupleListTest("a=1,=,c=3", asList(Pair.of("a", "1"), Pair.of("c", "3")));
+        doCommaSeparatedTupleListTest("", emptyPairList());
+        doCommaSeparatedTupleListTest(null, emptyPairList());
+    }
+
     private static void doTupleListTest(String input, List<Pair<String, String>> expectedResults) {
-        final List<Pair<String, String>> result = OptionUtils.parseCommaSeparatedTuples(input);
+        final List<Pair<String, String>> result = OptionUtils.parseTupleList(input == null ? null : asList(input));
+        assertNotNull(result);
+        assertEquals(result, expectedResults);
+    }
+	
+	private static void doCommaSeparatedTupleListTest(String input, List<Pair<String, String>> expectedResults) {
+        final List<Pair<String, String>> result = OptionUtils.parseTupleList(OptionUtils.splitCommaSeparatedList(input));
         assertNotNull(result);
         assertEquals(result, expectedResults);
     }

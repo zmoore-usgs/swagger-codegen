@@ -115,11 +115,40 @@ public final class CodegenConfiguratorUtils {
             configurator.addAdditionalReservedWordMapping(entry.getKey(), entry.getValue());
         }        
     }
+	
+	//AQCU Extension
+	public static void applyTypeMappingsKvpListWithCommas(List<String> typeMappings, CodegenConfigurator configurator) {
+        final Map<String, String> map = createMapFromKeyValuePairListWithCommas(typeMappings);
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            configurator.addTypeMapping(entry.getKey(), entry.getValue());
+        }
+    }
+	
+	//AQCU Extension
+	public static void applyImportMappingsKvpListWithCommas(List<String> importMappings, CodegenConfigurator configurator) {
+        final Map<String, String> map = createMapFromKeyValuePairListWithCommas(importMappings);
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            configurator.addImportMapping(entry.getKey().trim(), entry.getValue().trim());
+        }
+    }
         
     private static Set<String> createSetFromCsvList(String csvProperty) {
         final List<String> values = OptionUtils.splitCommaSeparatedList(csvProperty);
         return new HashSet<String>(values);
     }
+	
+	//AQCU Extension
+	private static Map<String, String> createMapFromKeyValuePairListWithCommas(List<String> KVPairs){
+		final List<Pair<String, String>> pairs = OptionUtils.parseTupleList(KVPairs);
+
+        Map<String, String> result = new HashMap<String, String>();
+
+        for (Pair<String, String> pair : pairs) {
+            result.put(pair.getLeft(), pair.getRight());
+        }
+
+        return result;
+	}
 
     private static Map<String, String> createMapFromKeyValuePairs(String commaSeparatedKVPairs) {
         final List<Pair<String, String>> pairs = OptionUtils.parseCommaSeparatedTuples(commaSeparatedKVPairs);

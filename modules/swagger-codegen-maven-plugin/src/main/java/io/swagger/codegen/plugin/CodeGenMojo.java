@@ -21,10 +21,10 @@ import static io.swagger.codegen.config.CodegenConfiguratorUtils.applyLanguageSp
 import static io.swagger.codegen.config.CodegenConfiguratorUtils.applyTypeMappingsKvp;
 import static io.swagger.codegen.config.CodegenConfiguratorUtils.applyReservedWordsMappingsKvp;
 import static io.swagger.codegen.config.CodegenConfiguratorUtils.applyAdditionalPropertiesKvpList;
-import static io.swagger.codegen.config.CodegenConfiguratorUtils.applyImportMappingsKvpList;
+import static io.swagger.codegen.config.CodegenConfiguratorUtils.applyImportMappingsKvpListWithCommas;
 import static io.swagger.codegen.config.CodegenConfiguratorUtils.applyInstantiationTypesKvpList;
 import static io.swagger.codegen.config.CodegenConfiguratorUtils.applyLanguageSpecificPrimitivesCsvList;
-import static io.swagger.codegen.config.CodegenConfiguratorUtils.applyTypeMappingsKvpList;
+import static io.swagger.codegen.config.CodegenConfiguratorUtils.applyTypeMappingsKvpListWithCommas;
 import static io.swagger.codegen.config.CodegenConfiguratorUtils.applyReservedWordsMappingsKvpList;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
@@ -472,12 +472,12 @@ public class CodeGenMojo extends AbstractMojo {
 
         //Apply Import Mappings
         if (importMappings != null && !configOptions.containsKey("import-mappings")) {
-            applyImportMappingsKvpList(importMappings, configurator);
+            applyImportMappingsKvpListWithCommas(importMappings, configurator);
         }
 
         //Apply Type Mappings
         if (typeMappings != null && !configOptions.containsKey("type-mappings")) {
-            applyTypeMappingsKvpList(typeMappings, configurator);
+            applyTypeMappingsKvpListWithCommas(typeMappings, configurator);
         }
 
         //Apply Language Specific Primitives
