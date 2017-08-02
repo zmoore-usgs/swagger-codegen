@@ -91,11 +91,11 @@ public class AQSwaggerParser extends SwaggerCompatConverter {
 	public String applyJsonOverrides(String data){
 		HashMap<String,String> jsonReplaceMappings = new HashMap<>();
 
-		log.info("Replacing JSON Types...");
+		log.debug("Replacing JSON Strings...");
 		jsonReplaceMappings.put("\"Array\"", "\"array\"");
 		
 		for(Entry<String,String> entry : jsonReplaceMappings.entrySet()){
-			log.info("..." + entry.getKey()+ " ==> " + entry.getValue());
+			log.debug("\t" + entry.getKey()+ " ==> " + entry.getValue());
 			data = data.replaceAll(entry.getKey(), entry.getValue());
 		}
 		
