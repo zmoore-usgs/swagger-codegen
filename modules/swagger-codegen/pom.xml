@@ -204,11 +204,6 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>aquarius-swagger-parser</artifactId>
-            <version>${aquarius-swagger-parser-version}</version>
-        </dependency>
-        <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-compat-spec-parser</artifactId>
             <version>${swagger-parser-version}</version>
