@@ -1816,13 +1816,19 @@ public class DefaultCodegen {
             property.isListContainer = true;
             property.containerType = "array";
             property.baseType = getSwaggerType(p);
+            if (p.getXml() != null) {
+              property.isXmlWrapped = p.getXml().getWrapped() == null ? false : p.getXml().getWrapped();
+              property.xmlPrefix= p.getXml().getPrefix();
+              property.xmlNamespace = p.getXml().getNamespace();
+              property.xmlName = p.getXml().getName();
+            }
             // handle inner property
             ArrayProperty ap = (ArrayProperty) p;
             property.maxItems = ap.getMaxItems();
             property.minItems = ap.getMinItems();
             String itemName = (String) p.getVendorExtensions().get("x-item-name");
             if (itemName == null) {
-                itemName = property.name;
+              itemName = property.name;
             }
             CodegenProperty cp = fromProperty(itemName, ap.getItems());
             updatePropertyForArray(property, cp);
@@ -2174,6 +2180,10 @@ public class DefaultCodegen {
                     if (responseProperty instanceof ArrayProperty) {
                         ArrayProperty ap = (ArrayProperty) responseProperty;
                         CodegenProperty innerProperty = fromProperty("response", ap.getItems());
+                        op.returnBaseType = innerProperty.baseType;
+                    } else if (responseProperty instanceof MapProperty) {
+                        MapProperty ap = (MapProperty) responseProperty;
+                        CodegenProperty innerProperty = fromProperty("response", ap.getAdditionalProperties());
                         op.returnBaseType = innerProperty.baseType;
                     } else {
                         if (cm.complexType != null) {
@@ -3652,7 +3662,7 @@ public class DefaultCodegen {
      * writes it back to additionalProperties to be usable as a boolean in
      * mustache files.
      *
-     * @param propertyKey
+     * @param propertyKey property key
      * @return property value as boolean
      */
     public boolean convertPropertyToBooleanAndWriteBack(String propertyKey) {
