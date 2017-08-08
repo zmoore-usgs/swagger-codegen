@@ -35,7 +35,7 @@ public interface PetApi {
             })
     }, tags={ "pet", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 405, message = "Invalid input", response = Void.class) })
+        @ApiResponse(code = 405, message = "Invalid input")) })
     @ApiImplicitParams({
     
     })
@@ -53,7 +53,7 @@ public interface PetApi {
             })
     }, tags={ "pet", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 400, message = "Invalid pet value", response = Void.class) })
+        @ApiResponse(code = 400, message = "Invalid pet value")) })
     @ApiImplicitParams({
     @ApiImplicitParam(name = "apiKey", value = "",  dataType = "String", paramType = "header")
     })
@@ -70,8 +70,8 @@ public interface PetApi {
             })
     }, tags={ "pet", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "successful operation", response = Pet.class, responseContainer = "List"),
-        @ApiResponse(code = 400, message = "Invalid status value", response = Void.class) })
+        @ApiResponse(code = 200, message = "successful operation", response = Pet.class), responseContainer = "List"),
+        @ApiResponse(code = 400, message = "Invalid status value")) })
     @ApiImplicitParams({
     
     })
@@ -88,8 +88,8 @@ public interface PetApi {
             })
     }, tags={ "pet", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "successful operation", response = Pet.class, responseContainer = "List"),
-        @ApiResponse(code = 400, message = "Invalid tag value", response = Void.class) })
+        @ApiResponse(code = 200, message = "successful operation", response = Pet.class), responseContainer = "List"),
+        @ApiResponse(code = 400, message = "Invalid tag value")) })
     @ApiImplicitParams({
     
     })
@@ -103,9 +103,9 @@ public interface PetApi {
         @Authorization(value = "api_key")
     }, tags={ "pet", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "successful operation", response = Pet.class),
-        @ApiResponse(code = 400, message = "Invalid ID supplied", response = Void.class),
-        @ApiResponse(code = 404, message = "Pet not found", response = Void.class) })
+        @ApiResponse(code = 200, message = "successful operation", response = Pet.class)),
+        @ApiResponse(code = 400, message = "Invalid ID supplied")),
+        @ApiResponse(code = 404, message = "Pet not found")) })
     @ApiImplicitParams({
     
     })
@@ -122,9 +122,9 @@ public interface PetApi {
             })
     }, tags={ "pet", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 400, message = "Invalid ID supplied", response = Void.class),
-        @ApiResponse(code = 404, message = "Pet not found", response = Void.class),
-        @ApiResponse(code = 405, message = "Validation exception", response = Void.class) })
+        @ApiResponse(code = 400, message = "Invalid ID supplied")),
+        @ApiResponse(code = 404, message = "Pet not found")),
+        @ApiResponse(code = 405, message = "Validation exception")) })
     @ApiImplicitParams({
     
     })
@@ -142,7 +142,7 @@ public interface PetApi {
             })
     }, tags={ "pet", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 405, message = "Invalid input", response = Void.class) })
+        @ApiResponse(code = 405, message = "Invalid input")) })
     @ApiImplicitParams({
     
     })
@@ -160,7 +160,7 @@ public interface PetApi {
             })
     }, tags={ "pet", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "successful operation", response = ModelApiResponse.class) })
+        @ApiResponse(code = 200, message = "successful operation", response = ModelApiResponse.class)) })
     @ApiImplicitParams({
     
     })

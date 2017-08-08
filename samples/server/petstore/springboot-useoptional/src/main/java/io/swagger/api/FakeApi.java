@@ -33,7 +33,7 @@ public interface FakeApi {
 
     @ApiOperation(value = "", notes = "Test serialization of outer boolean types", response = Boolean.class, tags={ "fake", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "Output boolean", response = Boolean.class) })
+        @ApiResponse(code = 200, message = "Output boolean", response = Boolean.class)) })
     @RequestMapping(value = "/fake/outer/boolean",
         method = RequestMethod.POST)
     ResponseEntity<Boolean> fakeOuterBooleanSerialize(@ApiParam(value = "Input boolean as post body"  )  @Valid @RequestBody Boolean body, @RequestHeader(value = "Accept", required = false) String accept) throws Exception;
@@ -41,7 +41,7 @@ public interface FakeApi {
 
     @ApiOperation(value = "", notes = "Test serialization of object with outer number type", response = OuterComposite.class, tags={ "fake", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "Output composite", response = OuterComposite.class) })
+        @ApiResponse(code = 200, message = "Output composite", response = OuterComposite.class)) })
     @RequestMapping(value = "/fake/outer/composite",
         method = RequestMethod.POST)
     ResponseEntity<OuterComposite> fakeOuterCompositeSerialize(@ApiParam(value = "Input composite as post body"  )  @Valid @RequestBody OuterComposite body, @RequestHeader(value = "Accept", required = false) String accept) throws Exception;
@@ -49,7 +49,7 @@ public interface FakeApi {
 
     @ApiOperation(value = "", notes = "Test serialization of outer number types", response = BigDecimal.class, tags={ "fake", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "Output number", response = BigDecimal.class) })
+        @ApiResponse(code = 200, message = "Output number", response = BigDecimal.class)) })
     @RequestMapping(value = "/fake/outer/number",
         method = RequestMethod.POST)
     ResponseEntity<BigDecimal> fakeOuterNumberSerialize(@ApiParam(value = "Input number as post body"  )  @Valid @RequestBody BigDecimal body, @RequestHeader(value = "Accept", required = false) String accept) throws Exception;
@@ -57,7 +57,7 @@ public interface FakeApi {
 
     @ApiOperation(value = "", notes = "Test serialization of outer string types", response = String.class, tags={ "fake", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "Output string", response = String.class) })
+        @ApiResponse(code = 200, message = "Output string", response = String.class)) })
     @RequestMapping(value = "/fake/outer/string",
         method = RequestMethod.POST)
     ResponseEntity<String> fakeOuterStringSerialize(@ApiParam(value = "Input string as post body"  )  @Valid @RequestBody String body, @RequestHeader(value = "Accept", required = false) String accept) throws Exception;
@@ -65,7 +65,7 @@ public interface FakeApi {
 
     @ApiOperation(value = "To test \"client\" model", notes = "To test \"client\" model", response = Client.class, tags={ "fake", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "successful operation", response = Client.class) })
+        @ApiResponse(code = 200, message = "successful operation", response = Client.class)) })
     @RequestMapping(value = "/fake",
         produces = { "application/json" }, 
         consumes = { "application/json" },
@@ -77,8 +77,8 @@ public interface FakeApi {
         @Authorization(value = "http_basic_test")
     }, tags={ "fake", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 400, message = "Invalid username supplied", response = Void.class),
-        @ApiResponse(code = 404, message = "User not found", response = Void.class) })
+        @ApiResponse(code = 400, message = "Invalid username supplied")),
+        @ApiResponse(code = 404, message = "User not found")) })
     @RequestMapping(value = "/fake",
         produces = { "application/xml; charset=utf-8", "application/json; charset=utf-8" }, 
         consumes = { "application/xml; charset=utf-8", "application/json; charset=utf-8" },
@@ -88,8 +88,8 @@ public interface FakeApi {
 
     @ApiOperation(value = "To test enum parameters", notes = "To test enum parameters", response = Void.class, tags={ "fake", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 400, message = "Invalid request", response = Void.class),
-        @ApiResponse(code = 404, message = "Not found", response = Void.class) })
+        @ApiResponse(code = 400, message = "Invalid request")),
+        @ApiResponse(code = 404, message = "Not found")) })
     @RequestMapping(value = "/fake",
         produces = { "*/*" }, 
         consumes = { "*/*" },
@@ -99,7 +99,7 @@ public interface FakeApi {
 
     @ApiOperation(value = "test json serialization of form data", notes = "", response = Void.class, tags={ "fake", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "successful operation", response = Void.class) })
+        @ApiResponse(code = 200, message = "successful operation")) })
     @RequestMapping(value = "/fake/jsonFormData",
         consumes = { "application/json" },
         method = RequestMethod.GET)
