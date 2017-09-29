@@ -310,14 +310,11 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                </goals>
-                            </execution>
-                        </executions>
+						<configuration>
+							<skip>
+								true
+							</skip>
+						</configuration>
                     </plugin>
                 </plugins>
             </build>
