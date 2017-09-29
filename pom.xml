@@ -297,7 +297,7 @@
                 </plugins>
             </build>
         </profile>
-<!--         <profile>
+        <profile>
             <id>release-sign-artifacts</id>
             <activation>
                 <property>
@@ -315,14 +315,13 @@
                                 <id>sign-artifacts</id>
                                 <phase>verify</phase>
                                 <goals>
-                                    <goal>sign</goal>
                                 </goals>
                             </execution>
                         </executions>
                     </plugin>
                 </plugins>
             </build>
-        </profile> -->
+        </profile>
         <!-- Samples -->
         <profile>
             <id>android-client</id>
