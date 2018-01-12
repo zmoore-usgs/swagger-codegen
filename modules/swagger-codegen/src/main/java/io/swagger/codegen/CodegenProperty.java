@@ -39,7 +39,7 @@ public class CodegenProperty implements Cloneable {
     public boolean hasMore, required, secondaryParam;
     public boolean hasMoreNonReadOnly; // for model constructor, true if next properyt is not readonly
     public boolean isPrimitiveType, isContainer, isNotContainer;
-    public boolean isString, isInteger, isLong, isFloat, isDouble, isByteArray, isBinary, isFile, isBoolean, isDate, isDateTime;
+    public boolean isString, isNumeric, isInteger, isLong, isNumber, isFloat, isDouble, isByteArray, isBinary, isFile, isBoolean, isDate, isDateTime, isUuid;
     public boolean isListContainer, isMapContainer;
     public boolean isEnum;
     public boolean isReadOnly = false;
@@ -49,6 +49,7 @@ public class CodegenProperty implements Cloneable {
     public Map<String, Object> vendorExtensions;
     public boolean hasValidation; // true if pattern, maximum, etc are set (only used in the mustache template)
     public boolean isInherited;
+    public String discriminatorValue;
     public String nameInCamelCase; // property name in camel case
     // enum name based on the property name, usually use as a prefix (e.g. VAR_NAME) for enum name (e.g. VAR_NAME_VALUE1)
     public String enumName;
@@ -115,8 +116,10 @@ public class CodegenProperty implements Cloneable {
         result = prime * result + ((vendorExtensions == null) ? 0 : vendorExtensions.hashCode());
         result = prime * result + ((hasValidation  ? 13:31));
         result = prime * result + ((isString  ? 13:31));
+        result = prime * result + ((isNumeric ? 13:31));
         result = prime * result + ((isInteger ? 13:31));
         result = prime * result + ((isLong  ?13:31));
+        result = prime * result + ((isNumber ? 13:31));
         result = prime * result + ((isFloat ? 13:31));
         result = prime * result + ((isDouble  ? 13:31));
         result = prime * result + ((isByteArray  ? 13:31));
@@ -125,9 +128,11 @@ public class CodegenProperty implements Cloneable {
         result = prime * result + ((isBoolean  ? 13:31));
         result = prime * result + ((isDate  ? 13:31));
         result = prime * result + ((isDateTime ? 13:31));
+        result = prime * result + ((isUuid ? 13:31));
         result = prime * result + ((isMapContainer ? 13:31));
         result = prime * result + ((isListContainer  ? 13:31));
         result = prime * result + Objects.hashCode(isInherited);
+        result = prime * result + Objects.hashCode(discriminatorValue);
         result = prime * result + Objects.hashCode(nameInCamelCase);
         result = prime * result + Objects.hashCode(enumName);
         result = prime * result + ((maxItems == null) ? 0 : maxItems.hashCode());
@@ -261,10 +266,16 @@ public class CodegenProperty implements Cloneable {
             return false;
         }
 
+        if (this.isNumeric != other.isNumeric) {
+            return false;
+        }
         if (this.isInteger != other.isInteger) {
             return false;
         }
         if (this.isLong != other.isLong) {
+            return false;
+        }
+        if (this.isNumber != other.isNumber) {
             return false;
         }
         if (this.isFloat != other.isFloat) {
@@ -285,6 +296,9 @@ public class CodegenProperty implements Cloneable {
         if (this.isDateTime != other.isDateTime) {
             return false;
         }
+        if (this.isUuid != other.isUuid) {
+            return false;
+        }
         if (this.isBinary != other.isBinary) {
             return false;
         }
@@ -298,6 +312,9 @@ public class CodegenProperty implements Cloneable {
             return false;
         }
         if (!Objects.equals(this.isInherited, other.isInherited)) {
+            return false;
+        }
+        if (!Objects.equals(this.discriminatorValue, other.discriminatorValue)) {
             return false;
         }
         if (!Objects.equals(this.nameInCamelCase, other.nameInCamelCase)) {

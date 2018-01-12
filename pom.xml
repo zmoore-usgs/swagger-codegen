@@ -1,17 +1,21 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>5</version>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.swagger</groupId>
     <artifactId>swagger-codegen-project</artifactId>
     <packaging>pom</packaging>
     <name>swagger-codegen-project</name>
-    <version>2.3.0-5-SNAPSHOT</version>
+    <version>2.4.0-SNAPSHOT</version>
     <url>https://github.com/swagger-api/swagger-codegen</url>
     <scm>
-        <connection>scm:git:git@github.com:USGS-CIDA/swagger-codegen.git</connection>
-        <developerConnection>scm:git:git@github.com:USGS-CIDA/swagger-codegen.git</developerConnection>
-        <url>https://github.com/USGS-CIDA/swagger-codegen</url>
-      <tag>HEAD</tag>
-  </scm>
+        <connection>scm:git:git@github.com:swagger-api/swagger-codegen.git</connection>
+        <developerConnection>scm:git:git@github.com:swagger-api/swagger-codegen.git</developerConnection>
+        <url>https://github.com/swagger-api/swagger-codegen</url>
+    </scm>
     <developers>
         <developer>
             <id>fehguy</id>
@@ -85,7 +89,7 @@
                     <lineEnding>LF</lineEnding>
                 </configuration>
             </plugin>
-            <plugin>
+            <!--<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>2.17</version>
@@ -95,7 +99,7 @@
                         <phase>validate</phase>
                         <configuration>
                             <configLocation>google_checkstyle.xml</configLocation>
-                            <!-- Don't include generated sources a la http://stackoverflow.com/a/30406454 -->
+                            Don't include generated sources a la http://stackoverflow.com/a/30406454
                             <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
                             <encoding>UTF-8</encoding>
                             <consoleOutput>true</consoleOutput>
@@ -114,7 +118,7 @@
                         <version>6.19</version>
                     </dependency>
                 </dependencies>
-            </plugin>
+            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -208,6 +212,20 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <version>1.4.1</version>
                 <executions>
@@ -256,7 +274,7 @@
                                 </goals>
                             </execution>
                         </executions>
-                        <configuration />
+                        <configuration/>
                     </plugin>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
@@ -292,11 +310,15 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <configuration>
-                            <skip>
-                                true
-                            </skip>
-                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
@@ -336,6 +358,30 @@
             </activation>
             <modules>
                 <module>samples/client/petstore/clojure</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>haskell-http-client</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>haskell-http-client</value>
+                </property>
+            </activation>
+            <modules>
+                <module>samples/client/petstore/haskell-http-client</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>haskell-http-client-integration-test</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>haskell-http-client</value>
+                </property>
+            </activation>
+            <modules>
+                <module>samples/client/petstore/haskell-http-client/tests-integration</module>
             </modules>
         </profile>
         <profile>
@@ -639,7 +685,7 @@
             </modules>
         </profile>
         <profile>
-            <id>typescript-angular-client</id>
+            <id>typescript-angularjs-client</id>
             <activation>
                 <property>
                     <name>env</name>
@@ -647,7 +693,7 @@
                 </property>
             </activation>
             <modules>
-                <module>samples/client/petstore/typescript-angular/npm</module>
+                <module>samples/client/petstore/typescript-angularjs/npm</module>
             </modules>
         </profile>
         <profile>
@@ -791,35 +837,28 @@
                 </property>
             </activation>
             <modules>
-                <!-- servers -->
-                <module>samples/server/petstore/scalatra</module>
                 <!-- <module>samples/server/petstore/erlang-server</module> note: make sample compilation work -->
-                <!-- clients -->
-                <!--<module>samples/client/petstore/bash</module>-->
+				<!-- clients -->
+                <module>samples/client/petstore/php/SwaggerClient-php</module>
                 <module>samples/client/petstore/ruby</module>
                 <module>samples/client/petstore/scala</module>
                 <module>samples/client/petstore/akka-scala</module>
                 <module>samples/client/petstore/javascript</module>
                 <module>samples/client/petstore/python</module>
+                <module>samples/client/petstore/python-tornado</module>
                 <module>samples/client/petstore/typescript-fetch/builds/default</module>
                 <module>samples/client/petstore/typescript-fetch/builds/es6-target</module>
                 <module>samples/client/petstore/typescript-fetch/builds/with-npm-version</module>
                 <module>samples/client/petstore/typescript-fetch/tests/default</module>
                 <module>samples/client/petstore/typescript-node/npm</module>
-                <module>samples/client/petstore/typescript-angular</module>
+                <!-- comment out due to github rate limit error
+                <module>samples/client/petstore/typescript-angularjs</module>-->
                 <!-- comment out due to error `npm run build`
                 <module>samples/client/petstore/typescript-jquery/npm</module>-->
-                <module>samples/client/petstore/typescript-angular2/npm</module>
-                <module>samples/client/petstore/typescript-angular4/npm</module>
-                <module>samples/client/petstore/swift3/default/SwaggerClientTests</module>
-                <module>samples/client/petstore/swift3/promisekit/SwaggerClientTests</module>
-                <module>samples/client/petstore/swift3/rxswift/SwaggerClientTests</module>
-                <module>samples/client/petstore/swift/default/SwaggerClientTests</module>
-                <module>samples/client/petstore/swift/promisekit/SwaggerClientTests</module>
-                <module>samples/client/petstore/swift/rxswift/SwaggerClientTests</module>
-                <!-- comment out objc tests as it's timing out
-                <module>samples/client/petstore/objc/default/SwaggerClientTests</module>
-                <module>samples/client/petstore/objc/core-data/SwaggerClientTests</module>-->
+                <!--<module>samples/client/petstore/typescript-angular-v2/npm</module>-->
+                <module>samples/client/petstore/typescript-angular-v4/npm</module>
+                <module>samples/client/petstore/typescript-angular-v4.3/npm</module>
+                <!--<module>samples/client/petstore/bash</module>-->
             </modules>
         </profile>
     </profiles>
@@ -881,54 +920,20 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-	
-	<distributionManagement>
-		<repository>
-			<id>cida-releases</id>
-			<name>CIDA Releases</name>
-			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-public-releases</url>
-		</repository>
-		<snapshotRepository>
-			<id>cida-snapshots</id>
-			<name>CIDA Snapshots</name>
-			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-public-snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
-	
-	<repositories>
-		<repository>
-			<id>cida-releases</id>
-			<name>CIDA Releases</name>
-			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-releases</url>
-		</repository>
-		<repository>
-			<id>cida-snapshots</id>
-			<name>CIDA Snapshots</name>
-			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-snapshots</url>
-		</repository>
-		<repository>
-			<id>cida-public</id>
-			<name>CIDA Public Nexus</name>
-			<url>http://cida.usgs.gov/maven/cida-public-releases/</url>
-		</repository>
-		<repository>
-			<id>cida-public-snapshots</id>
-			<name>CIDA Public Snapshots</name>
-			<url>http://cida.usgs.gov/maven/cida-public-snapshots/</url>
-		</repository>
-		<repository>
-			<id>cida-thirdparty</id>
-			<name>CIDA Public Nexus</name>
-			<url>http://cida.usgs.gov/maven/cida-public-thirdparty/</url>
-		</repository>
-	</repositories>
-	
+    <repositories>
+        <repository>
+            <id>sonatype-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
     <properties>
-        <swagger-parser-version>1.0.32</swagger-parser-version>
-        <gson-version>2.8.1</gson-version>
+        <swagger-parser-version>1.0.33</swagger-parser-version>
         <scala-version>2.11.1</scala-version>
         <felix-version>3.3.0</felix-version>
-        <swagger-core-version>1.5.16</swagger-core-version>
+        <swagger-core-version>1.5.17</swagger-core-version>
         <commons-io-version>2.4</commons-io-version>
         <commons-cli-version>1.2</commons-cli-version>
         <junit-version>4.8.1</junit-version>
