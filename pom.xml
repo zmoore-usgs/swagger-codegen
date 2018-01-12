@@ -13,7 +13,7 @@
     <url>https://github.com/swagger-api/swagger-codegen</url>
     <scm>
         <connection>scm:git:git@github.com:swagger-api/swagger-codegen.git</connection>
-        <developerConnection>scm:git:git@github.com:swagger-api/swagger-codegen.git</developerConnection>
+        <developerConnection>scm:git:git@github.com:USGS-CIDA/swagger-codegen.git</developerConnection>
         <url>https://github.com/swagger-api/swagger-codegen</url>
     </scm>
     <developers>
