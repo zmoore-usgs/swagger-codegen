@@ -21,8 +21,11 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 public class PythonClientCodegen extends DefaultCodegen implements CodegenConfig {
     public static final String PACKAGE_URL = "packageUrl";
+    public static final String DEFAULT_LIBRARY = "urllib3";
 
     protected String packageName; // e.g. petstore_api
     protected String packageVersion;
@@ -64,6 +67,7 @@ public class PythonClientCodegen extends DefaultCodegen implements CodegenConfig
         languageSpecificPrimitives.add("int");
         languageSpecificPrimitives.add("float");
         languageSpecificPrimitives.add("list");
+        languageSpecificPrimitives.add("dict");
         languageSpecificPrimitives.add("bool");
         languageSpecificPrimitives.add("str");
         languageSpecificPrimitives.add("datetime");
@@ -124,6 +128,14 @@ public class PythonClientCodegen extends DefaultCodegen implements CodegenConfig
                 CodegenConstants.SORT_PARAMS_BY_REQUIRED_FLAG_DESC).defaultValue(Boolean.TRUE.toString()));
         cliOptions.add(new CliOption(CodegenConstants.HIDE_GENERATION_TIMESTAMP, "hides the timestamp when files were generated")
                 .defaultValue(Boolean.TRUE.toString()));
+
+        supportedLibraries.put("urllib3", "urllib3-based client");
+        supportedLibraries.put("asyncio", "Asyncio-based client (python 3.5+)");
+        supportedLibraries.put("tornado", "tornado-based client");
+        CliOption libraryOption = new CliOption(CodegenConstants.LIBRARY, "library template (sub-template) to use");
+        libraryOption.setDefault(DEFAULT_LIBRARY);
+        cliOptions.add(libraryOption);
+        setLibrary(DEFAULT_LIBRARY);
     }
 
     @Override
@@ -178,24 +190,16 @@ public class PythonClientCodegen extends DefaultCodegen implements CodegenConfig
             setPackageUrl((String) additionalProperties.get(PACKAGE_URL));
         }
 
-        String swaggerFolder = packageName;
-
-        modelPackage = swaggerFolder + File.separatorChar + "models";
-        apiPackage = swaggerFolder + File.separatorChar + "apis";
-
         supportingFiles.add(new SupportingFile("README.mustache", "", "README.md"));
 
-        supportingFiles.add(new SupportingFile("setup.mustache", "", "setup.py"));
         supportingFiles.add(new SupportingFile("tox.mustache", "", "tox.ini"));
         supportingFiles.add(new SupportingFile("test-requirements.mustache", "", "test-requirements.txt"));
         supportingFiles.add(new SupportingFile("requirements.mustache", "", "requirements.txt"));
 
-        supportingFiles.add(new SupportingFile("api_client.mustache", swaggerFolder, "api_client.py"));
-        supportingFiles.add(new SupportingFile("rest.mustache", swaggerFolder, "rest.py"));
-        supportingFiles.add(new SupportingFile("configuration.mustache", swaggerFolder, "configuration.py"));
-        supportingFiles.add(new SupportingFile("__init__package.mustache", swaggerFolder, "__init__.py"));
-        supportingFiles.add(new SupportingFile("__init__model.mustache", modelPackage, "__init__.py"));
-        supportingFiles.add(new SupportingFile("__init__api.mustache", apiPackage, "__init__.py"));
+        supportingFiles.add(new SupportingFile("configuration.mustache", packageName, "configuration.py"));
+        supportingFiles.add(new SupportingFile("__init__package.mustache", packageName, "__init__.py"));
+        supportingFiles.add(new SupportingFile("__init__model.mustache", packageName + File.separatorChar + modelPackage, "__init__.py"));
+        supportingFiles.add(new SupportingFile("__init__api.mustache", packageName + File.separatorChar + apiPackage, "__init__.py"));
 
         if(Boolean.FALSE.equals(excludeTests)) {
             supportingFiles.add(new SupportingFile("__init__test.mustache", testFolder, "__init__.py"));
@@ -203,10 +207,41 @@ public class PythonClientCodegen extends DefaultCodegen implements CodegenConfig
         supportingFiles.add(new SupportingFile("git_push.sh.mustache", "", "git_push.sh"));
         supportingFiles.add(new SupportingFile("gitignore.mustache", "", ".gitignore"));
         supportingFiles.add(new SupportingFile("travis.mustache", "", ".travis.yml"));
+        supportingFiles.add(new SupportingFile("setup.mustache", "", "setup.py"));
+        supportingFiles.add(new SupportingFile("api_client.mustache", packageName, "api_client.py"));
+
+        if ("asyncio".equals(getLibrary())) {
+            supportingFiles.add(new SupportingFile("asyncio/rest.mustache", packageName, "rest.py"));
+            additionalProperties.put("asyncio", "true");
+        } else if ("tornado".equals(getLibrary())) {
+            supportingFiles.add(new SupportingFile("tornado/rest.mustache", packageName, "rest.py"));
+            additionalProperties.put("tornado", "true");
+        } else {
+            supportingFiles.add(new SupportingFile("rest.mustache", packageName, "rest.py"));
+        }
+
+        modelPackage = packageName + "." + modelPackage;
+        apiPackage = packageName + "." + apiPackage;
+
     }
 
     private static String dropDots(String str) {
         return str.replaceAll("\\.", "_");
+    }
+
+    @Override
+    public String toModelImport(String name) {
+        String modelImport;
+        if (StringUtils.startsWithAny(name,"import", "from")) {
+            modelImport = name;
+        } else {
+            modelImport = "from ";
+            if (!"".equals(modelPackage())) {
+                modelImport += modelPackage() + ".";
+            }
+            modelImport += toModelFilename(name)+ " import " + name;
+        }
+        return modelImport;
     }
 
     @Override

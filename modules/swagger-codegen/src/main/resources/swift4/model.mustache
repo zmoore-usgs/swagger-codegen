@@ -11,78 +11,14 @@ import Foundation
 
 /** {{description}} */{{/description}}
 {{#isArrayModel}}
-public typealias {{classname}} = [{{arrayModelType}}]
+{{> modelArray}}
 {{/isArrayModel}}
 {{^isArrayModel}}
 {{#isEnum}}
-public enum {{classname}}: {{dataType}}, Codable {
-{{#allowableValues}}{{#enumVars}}    case {{name}} = "{{{value}}}"
-{{/enumVars}}{{/allowableValues}}
-}
+{{> modelEnum}}
 {{/isEnum}}
 {{^isEnum}}
-{{#vars.isEmpty}}
-public typealias {{classname}} = {{dataType}}
-{{/vars.isEmpty}}
-{{^vars.isEmpty}}
-open class {{classname}}: {{#parent}}{{{parent}}}{{/parent}}{{^parent}}Codable{{/parent}} {
-
-{{#vars}}
-{{#isEnum}}
-    public enum {{enumName}}: {{^isContainer}}{{datatype}}{{/isContainer}}{{#isContainer}}String{{/isContainer}}, Codable { {{#allowableValues}}{{#enumVars}}
-        case {{name}} = {{#isContainer}}"{{/isContainer}}{{#isString}}"{{/isString}}{{{value}}}{{#isString}}"{{/isString}}{{#isContainer}}"{{/isContainer}}{{/enumVars}}{{/allowableValues}}
-    }
-{{/isEnum}}
-{{/vars}}
-{{#vars}}
-{{#isEnum}}
-    {{#description}}/** {{description}} */
-    {{/description}}public var {{name}}: {{{datatypeWithEnum}}}{{^unwrapRequired}}?{{/unwrapRequired}}{{#unwrapRequired}}{{^required}}?{{/required}}{{/unwrapRequired}}{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}
-{{/isEnum}}
-{{^isEnum}}
-    {{#description}}/** {{description}} */
-    {{/description}}public var {{name}}: {{{datatype}}}{{^unwrapRequired}}?{{/unwrapRequired}}{{#unwrapRequired}}{{^required}}?{{/required}}{{/unwrapRequired}}{{#defaultValue}} = {{{defaultValue}}}{{/defaultValue}}{{#objcCompatible}}{{#vendorExtensions.x-swift-optional-scalar}}
-    public var {{name}}Num: NSNumber? {
-        get {
-            return {{name}}.map({ return NSNumber(value: $0) })
-        }
-    }{{/vendorExtensions.x-swift-optional-scalar}}{{/objcCompatible}}
-{{/isEnum}}
-{{/vars}}
-
-{{#additionalPropertiesType}}
-    public var additionalProperties: [AnyHashable:{{{additionalPropertiesType}}}] = [:]
-
-{{/additionalPropertiesType}}
-{{^unwrapRequired}}
-    {{^parent}}public init() {}{{/parent}}{{/unwrapRequired}}
-{{#unwrapRequired}}
-    public init({{#allVars}}{{^-first}}, {{/-first}}{{name}}: {{#isEnum}}{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{datatype}}{{/isEnum}}{{^required}}?=nil{{/required}}{{/allVars}}) {
-        {{#vars}}
-        self.{{name}} = {{name}}
-        {{/vars}}
-    }{{/unwrapRequired}}
-{{#additionalPropertiesType}}
-    public subscript(key: AnyHashable) -> {{{additionalPropertiesType}}}? {
-        get {
-            if let value = additionalProperties[key] {
-                return value
-            }
-            return nil
-        }
-
-        set {
-            additionalProperties[key] = newValue
-        }
-    }
-{{/additionalPropertiesType}}
-
-    private enum CodingKeys: String, CodingKey { {{#vars}}
-        case {{{name}}} = "{{{baseName}}}"{{/vars}}
-    }
-
-}
-{{/vars.isEmpty}}
+{{> modelObject}}
 {{/isEnum}}
 {{/isArrayModel}}
 {{/model}}

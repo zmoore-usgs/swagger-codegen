@@ -20,29 +20,31 @@ import io.swagger.models.properties.LongProperty;
 import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.StringProperty;
+import org.apache.commons.lang3.StringUtils;
 
 public abstract class AbstractScalaCodegen extends DefaultCodegen {
 
     protected String modelPropertyNaming = "camelCase";
     protected String invokerPackage = "io.swagger.client";
     protected String sourceFolder = "src/main/scala";
+    protected boolean stripPackageName = true;
 
     public AbstractScalaCodegen() {
         super();
 
         languageSpecificPrimitives.addAll(Arrays.asList(
-                        "String",
-                        "boolean",
-                        "Boolean",
-                        "Double",
-                        "Int",
-                        "Long",
-                        "Float",
-                        "Object",
-                        "Any",
-                        "List",
-                        "Seq",
-                        "Map"));
+                "String",
+                "boolean",
+                "Boolean",
+                "Double",
+                "Int",
+                "Long",
+                "Float",
+                "Object",
+                "Any",
+                "List",
+                "Seq",
+                "Map"));
 
         cliOptions.add(new CliOption(CodegenConstants.MODEL_PACKAGE, CodegenConstants.MODEL_PACKAGE_DESC));
         cliOptions.add(new CliOption(CodegenConstants.API_PACKAGE, CodegenConstants.API_PACKAGE_DESC));
@@ -56,6 +58,13 @@ public abstract class AbstractScalaCodegen extends DefaultCodegen {
         if (additionalProperties.containsKey(CodegenConstants.SOURCE_FOLDER)) {
             this.setSourceFolder((String) additionalProperties.get(CodegenConstants.SOURCE_FOLDER));
         }
+        if (additionalProperties.containsKey(CodegenConstants.STRIP_PACKAGE_NAME) &&
+                "false".equalsIgnoreCase(additionalProperties.get(CodegenConstants.STRIP_PACKAGE_NAME).toString())) {
+            this.stripPackageName = false;
+            additionalProperties.put(CodegenConstants.STRIP_PACKAGE_NAME, false);
+            LOGGER.warn("stripPackageName=false. Compilation errors may occur if API type names clash with types " +
+                    "in the default imports");
+        }
     }
 
     public void setSourceFolder(String sourceFolder) {
@@ -67,8 +76,8 @@ public abstract class AbstractScalaCodegen extends DefaultCodegen {
     }
 
     @Override
-    public String escapeReservedWord(String name) {           
-        if(this.reservedWordsMappings().containsKey(name)) {
+    public String escapeReservedWord(String name) {
+        if (this.reservedWordsMappings().containsKey(name)) {
             return this.reservedWordsMappings().get(name);
         }
         return "_" + name;
@@ -93,7 +102,7 @@ public abstract class AbstractScalaCodegen extends DefaultCodegen {
         } else if (p instanceof MapProperty) {
             MapProperty mp = (MapProperty) p;
             Property inner = mp.getAdditionalProperties();
-    
+
             return getSwaggerType(p) + "[String, " + getTypeDeclaration(inner) + "]";
         }
         return super.getTypeDeclaration(p);
@@ -184,4 +193,28 @@ public abstract class AbstractScalaCodegen extends DefaultCodegen {
         return input.replace("*/", "*_/").replace("/*", "/_*");
     }
 
+    protected String formatIdentifier(String name, boolean capitalized) {
+        String identifier = camelize(sanitizeName(name), true);
+        if (capitalized) {
+            identifier = StringUtils.capitalize(identifier);
+        }
+        if (identifier.matches("[a-zA-Z_$][\\w_$]+") && !isReservedWord(identifier)) {
+            return identifier;
+        }
+        return escapeReservedWord(identifier);
+    }
+
+    protected String stripPackageName(String input) {
+        if (!stripPackageName || StringUtils.isEmpty(input) || input.lastIndexOf(".") < 0)
+            return input;
+
+        int lastIndexOfDot = input.lastIndexOf(".");
+        return input.substring(lastIndexOfDot + 1);
+    }
+
+    @Override
+    public String escapeQuotationMark(String input) {
+        // remove " to avoid code injection
+        return input.replace("\"", "");
+    }
 }

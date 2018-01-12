@@ -13,6 +13,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Strings;
 
 import io.swagger.codegen.CliOption;
@@ -27,6 +30,7 @@ import io.swagger.models.Model;
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
 import io.swagger.models.Swagger;
+import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.FormParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.properties.ArrayProperty;
@@ -42,6 +46,7 @@ import io.swagger.models.properties.StringProperty;
 
 public abstract class AbstractJavaCodegen extends DefaultCodegen implements CodegenConfig {
 
+    static Logger LOGGER = LoggerFactory.getLogger(AbstractJavaCodegen.class);
     public static final String FULL_JAVA_UTIL = "fullJavaUtil";
     public static final String DEFAULT_LIBRARY = "<default>";
     public static final String DATE_LIBRARY = "dateLibrary";
@@ -493,6 +498,19 @@ public abstract class AbstractJavaCodegen extends DefaultCodegen implements Code
     }
 
     @Override
+    public String toApiName(String name) {
+        if (name.length() == 0) {
+            return "DefaultApi";
+        }
+        return camelize(name) + "Api";
+    }
+
+    @Override
+    public String toApiFilename(String name) {
+        return toApiName(name);
+    }
+
+    @Override
     public String toVarName(String name) {
         // sanitize name
         name = sanitizeName(name); // FIXME: a parameter should not be assigned. Also declare the methods parameters as 'final'.
@@ -619,7 +637,7 @@ public abstract class AbstractJavaCodegen extends DefaultCodegen implements Code
 
     @Override
     public String getAlias(String name) {
-        if (typeAliases.containsKey(name)) {
+        if (typeAliases != null && typeAliases.containsKey(name)) {
             return typeAliases.get(name);
         }
         return name;
@@ -857,10 +875,12 @@ public abstract class AbstractJavaCodegen extends DefaultCodegen implements Code
             }
         }
 
-        if ("array".equals(property.containerType)) {
-          model.imports.add("ArrayList");
-        } else if ("map".equals(property.containerType)) {
-          model.imports.add("HashMap");
+        if (!fullJavaUtil) {
+            if ("array".equals(property.containerType)) {
+                model.imports.add("ArrayList");
+            } else if ("map".equals(property.containerType)) {
+                model.imports.add("HashMap");
+            }
         }
 
         if(!BooleanUtils.toBoolean(model.isEnum)) {
@@ -922,13 +942,16 @@ public abstract class AbstractJavaCodegen extends DefaultCodegen implements Code
             }
             for (Operation operation : path.getOperations()) {
                 boolean hasFormParameters = false;
+                boolean hasBodyParameters = false;
                 for (Parameter parameter : operation.getParameters()) {
                     if (parameter instanceof FormParameter) {
                         hasFormParameters = true;
                     }
+                    if (parameter instanceof BodyParameter) {
+                        hasBodyParameters = true;
+                    }
                 }
-              //only add content-Type if its no a GET-Method
-                if(path.getGet() != null || ! operation.equals(path.getGet())){
+                if (hasBodyParameters || hasFormParameters){
                     String defaultContentType = hasFormParameters ? "application/x-www-form-urlencoded" : "application/json";
                     String contentType =  operation.getConsumes() == null || operation.getConsumes().isEmpty() ? defaultContentType : operation.getConsumes().get(0);
                     operation.setVendorExtension("x-contentType", contentType);
@@ -1016,9 +1039,11 @@ public abstract class AbstractJavaCodegen extends DefaultCodegen implements Code
 
     @Override
     public String toEnumValue(String value, String datatype) {
-        if ("Integer".equals(datatype) || "Long".equals(datatype) ||
-            "Double".equals(datatype)) {
+        if ("Integer".equals(datatype) || "Double".equals(datatype)) {
             return value;
+        } else if ("Long".equals(datatype)) {
+            // add l to number, e.g. 2048 => 2048l
+            return value + "l";
         } else if ("Float".equals(datatype)) {
             // add f to number, e.g. 3.14 => 3.14f
             return value + "f";
@@ -1243,11 +1268,6 @@ public abstract class AbstractJavaCodegen extends DefaultCodegen implements Code
         additionalProperties.put(propertyKey, value);
     }
 
-    @Override
-    public String sanitizeTag(String tag) {
-        return camelize(sanitizeName(tag));
-    }
-
     /**
      * Output the Getter name for boolean property, e.g. isActive
      *
@@ -1256,6 +1276,17 @@ public abstract class AbstractJavaCodegen extends DefaultCodegen implements Code
      */
     public String toBooleanGetter(String name) {
         return "is" + getterAndSetterCapitalize(name);
+    }
+
+    @Override
+    public String sanitizeTag(String tag) {
+        tag = camelize(underscore(sanitizeName(tag)));
+
+        // tag starts with numbers
+        if (tag.matches("^\\d.*")) {
+            tag = "Class" + tag;
+        }
+        return tag;
     }
 
 }
