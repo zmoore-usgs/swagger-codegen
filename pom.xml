@@ -876,30 +876,46 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-    <repositories>
-        <repository>
-            <id>cida-releases</id>
-            <name>CIDA Releases</name>
-            <url>https://internal.cida.usgs.gov/maven/content/repositories/cida-releases</url>
-        </repository>
-        <repository>
-            <id>cida-snapshots</id>
-            <name>CIDA Snapshots</name>
-            <url>https://internal.cida.usgs.gov/maven/content/repositories/cida-snapshots</url>
+    <distributionManagement>
+		<repository>
+			<id>cida-releases</id>
+			<name>CIDA Releases</name>
+			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-public-releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>cida-snapshots</id>
+			<name>CIDA Snapshots</name>
+			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-public-snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+	
+	<repositories>
+		<repository>
+			<id>cida-releases</id>
+			<name>CIDA Releases</name>
+			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-releases</url>
+		</repository>
+		<repository>
+			<id>cida-snapshots</id>
+			<name>CIDA Snapshots</name>
+			<url>https://internal.cida.usgs.gov/maven/content/repositories/cida-snapshots</url>
+		</repository>
+		<repository>
+			<id>cida-public</id>
+			<name>CIDA Public Nexus</name>
+			<url>http://cida.usgs.gov/maven/cida-public-releases/</url>
+		</repository>
+		<repository>
+			<id>cida-public-snapshots</id>
+			<name>CIDA Public Snapshots</name>
+			<url>http://cida.usgs.gov/maven/cida-public-snapshots/</url>
+		</repository>
+		<repository>
+			<id>cida-thirdparty</id>
+			<name>CIDA Public Nexus</name>
+			<url>http://cida.usgs.gov/maven/cida-public-thirdparty/</url>
         </repository>
     </repositories>
-    <distributionManagement>
-        <repository>
-            <id>cida-releases</id>
-                <name>CIDA Releases</name>
-                <url>https://internal.cida.usgs.gov/maven/content/repositories/cida-releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>cida-snapshots</id>
-            <name>CIDA Snapshots</name>
-            <url>https://internal.cida.usgs.gov/maven/content/repositories/cida-snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
     
     <properties>
         <swagger-parser-version>1.0.33</swagger-parser-version>
