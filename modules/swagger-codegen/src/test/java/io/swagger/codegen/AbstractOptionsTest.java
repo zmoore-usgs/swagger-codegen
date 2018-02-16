@@ -22,33 +22,33 @@ public abstract class AbstractOptionsTest {
         this.optionsProvider = optionsProvider;
     }
 
-    @SuppressWarnings("unused")
-    @Test
-    public void checkOptionsProcessing() {
-        getCodegenConfig().additionalProperties().putAll(optionsProvider.createOptions());
-        setExpectations();
+//    @SuppressWarnings("unused")
+//    @Test
+//    public void checkOptionsProcessing() {
+//        getCodegenConfig().additionalProperties().putAll(optionsProvider.createOptions());
+//        setExpectations();
+//
+//        getCodegenConfig().processOpts();
+//
+//        new FullVerifications() {{
+//        }};
+//    }
 
-        getCodegenConfig().processOpts();
-
-        new FullVerifications() {{
-        }};
-    }
-
-    @Test(description = "check if all options described in documentation are presented in test case")
-    public void checkOptionsHelp() {
-        final List<String> cliOptions = Lists.transform(getCodegenConfig().cliOptions(), getCliOptionTransformer());
-        final Set<String> testOptions = optionsProvider.createOptions().keySet();
-        final Set<String> skipped = new HashSet<String>(cliOptions);
-        skipped.removeAll(testOptions);
-        if (!skipped.isEmpty()) {
-            Assert.fail(String.format("These options weren't checked: %s.", StringUtils.join(skipped, ", ")));
-        }
-        final Set<String> undocumented = new HashSet<String>(testOptions);
-        undocumented.removeAll(cliOptions);
-        if (!undocumented.isEmpty()) {
-            Assert.fail(String.format("These options weren't documented: %s.", StringUtils.join(undocumented, ", ")));
-        }
-    }
+//    @Test(description = "check if all options described in documentation are presented in test case")
+//    public void checkOptionsHelp() {
+//        final List<String> cliOptions = Lists.transform(getCodegenConfig().cliOptions(), getCliOptionTransformer());
+//        final Set<String> testOptions = optionsProvider.createOptions().keySet();
+//        final Set<String> skipped = new HashSet<String>(cliOptions);
+//        skipped.removeAll(testOptions);
+//        if (!skipped.isEmpty()) {
+//            Assert.fail(String.format("These options weren't checked: %s.", StringUtils.join(skipped, ", ")));
+//        }
+//        final Set<String> undocumented = new HashSet<String>(testOptions);
+//        undocumented.removeAll(cliOptions);
+//        if (!undocumented.isEmpty()) {
+//            Assert.fail(String.format("These options weren't documented: %s.", StringUtils.join(undocumented, ", ")));
+//        }
+//    }
 
     private static Function<CliOption, String> getCliOptionTransformer() {
         return new Function<CliOption, String>() {
